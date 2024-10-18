@@ -36,11 +36,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black, // Background color to match the theme
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text('Profile', style: TextStyle(color: Colors.white)),
-        elevation: 0,
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: Colors.black,
+      //   title: Text('Profile', style: TextStyle(color: Colors.white)),
+      //   elevation: 0,
+      // ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
