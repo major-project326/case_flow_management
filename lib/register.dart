@@ -40,7 +40,7 @@ class _MyHomePageState extends State<Register> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          color: Color.fromARGB(255, 27, 27, 27), 
+          color: Color.fromARGB(255, 27, 27, 27),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -105,7 +105,7 @@ class _MyHomePageState extends State<Register> {
                           textStyle: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                          ), 
+                          ),
                         ),
                         child: const Text('REGISTER',style: TextStyle(color: Colors.black),),
                       ),
@@ -120,3 +120,4 @@ class _MyHomePageState extends State<Register> {
     );
   }
 }
+

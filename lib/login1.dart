@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:major_project/first.dart';
 
-
-
 void main() {
   runApp(MyApp());
 }
@@ -54,26 +52,25 @@ class _Login1State extends State<Login1> {
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
                       color: const Color.fromARGB(255, 252, 140, 178),
-                      
+
                     ),
                   ),
               ),
-              
+
               SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-              
+
                  child:  TextField(
                   style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
                       decoration: const InputDecoration(
-                        labelText: 'Email or Phone number', 
+                        labelText: 'Email or Phone number',
                         labelStyle: TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
-                        
-                    
+
                       ),
                   ),
               ),
-                          
+
               SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -82,7 +79,7 @@ class _Login1State extends State<Login1> {
                       decoration: const InputDecoration(
                         labelText: 'PASSWORD',
                         labelStyle: TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
-                      
+
                     ),
                   obscureText: true,
                 ),
@@ -99,7 +96,7 @@ class _Login1State extends State<Login1> {
                       keyboardType: TextInputType.numberWithOptions(),
                 ),
               ),
-              
+
               SizedBox(height: 40),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
