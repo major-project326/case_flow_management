@@ -1,75 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:major_project/dummy_data.dart';
 
-class CaseStatusPage extends StatelessWidget {
+class CaseStatusPage extends StatefulWidget {
   CaseStatusPage({super.key});
 
-  final List<Map<String, dynamic>> cases = [
-    {
-      "title": "Property Dispute Resolution",
-      "type": "Civil",
-      "id": "#CD1024",
-      "status": "Ongoing",
-      "rating": 3.5,
-      "statusColor": Colors.green,
-    },
-    {
-      "title": "Employment Contract Review",
-      "type": "Labor",
-      "id": "#EC3039",
-      "status": "Pending",
-      "rating": 3.0,
-      "statusColor": Colors.yellow,
-    },
-    {
-      "title": "Corporate Fraud Investigation",
-      "type": "Criminal",
-      "id": "#CF2048",
-      "status": "Closed",
-      "rating": 4.7,
-      "statusColor": Colors.red,
-    },
-    {
-      "title": "Family Estate Settlement",
-      "type": "Probate",
-      "id": "#FE5012",
-      "status": "In Review",
-      "rating": 2.5,
-      "statusColor": Colors.orange,
-    },
-    {
-      "title": "Corporate Fraud Investigation",
-      "type": "Criminal",
-      "id": "#CF2048",
-      "status": "Closed",
-      "rating": 4.7,
-      "statusColor": Colors.red,
-    },
-    {
-      "title": "Family Estate Settlement",
-      "type": "Probate",
-      "id": "#FE5012",
-      "status": "In Review",
-      "rating": 2.5,
-      "statusColor": Colors.orange,
-    },
-  ];
+  @override
+  State<CaseStatusPage> createState() => _CaseStatusPageState();
+}
+
+class _CaseStatusPageState extends State<CaseStatusPage> {
+  final Map<String, Color> colorMap = {
+    'Ongoing': Colors.green,
+    'Closed': Colors.red,
+    'Pending': Colors.yellow,
+    'In Review': Colors.orange
+  };
+
+  @override
+  void initState() {
+    data.sort((a, b) => b['priority'].compareTo(a['priority']));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: ListView.builder(
-        itemCount: cases.length,
+        itemCount: data.length,
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 3),
             child: CaseCard(
-              title: cases[index]['title'],
-              type: cases[index]['type'],
-              caseId: cases[index]['id'],
-              status: cases[index]['status'],
-              rating: cases[index]['rating'],
-              statusColor: cases[index]['statusColor'],
+              title: data[index]['title'],
+              type: data[index]['type'],
+              caseId: data[index]['id'],
+              status: data[index]['status'],
+              rating: double.parse(
+                  ((data[index]['priority'] / 21) * 100).toStringAsFixed(2)),
+              statusColor: colorMap[data[index]['status']]!,
             ),
           );
         },
@@ -86,7 +55,8 @@ class CaseCard extends StatelessWidget {
   final double rating;
   final Color statusColor;
 
-  const CaseCard({super.key, 
+  const CaseCard({
+    super.key,
     required this.title,
     required this.type,
     required this.caseId,
@@ -132,7 +102,7 @@ class CaseCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Priority: ${rating.toString()}',
+                      'Priority: ${rating.toString()} %',
                       style: TextStyle(fontSize: 14, color: Colors.white),
                     ),
                     Container(
