@@ -1,41 +1,20 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CaseUploadPage extends StatefulWidget {
+  const CaseUploadPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Case Management System',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 254, 109, 140)),
-      ),
-      home: const Upload(title: 'Case Management System'),
-    );
-  }
+  _CaseUploadPageState createState() => _CaseUploadPageState();
 }
 
-class Upload extends StatefulWidget {
-  const Upload({super.key, required this.title});
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<Upload> {
+class _CaseUploadPageState extends State<CaseUploadPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        backgroundColor: const Color.fromARGB(255, 27, 27, 27),
+        title: Text("Case Management system",
+            style: TextStyle(color: Colors.white)),
       ),
       body: SingleChildScrollView(
         child: Padding(
