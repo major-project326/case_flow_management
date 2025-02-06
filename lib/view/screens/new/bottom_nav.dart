@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:major_project/view/screens/case_status_page.dart';
-import 'package:major_project/view/screens/home_page.dart';
-import 'package:major_project/view/screens/profile_page.dart';
+import 'package:major_project/view/screens/new/cases.dart';
+import 'package:major_project/view/screens/new/dashboard.dart';
+import 'package:major_project/view/screens/new/profile.dart';
+
 
 class BottomNavPage extends StatefulWidget {
   const BottomNavPage({super.key});
@@ -12,18 +13,20 @@ class BottomNavPage extends StatefulWidget {
 
 class _BottomNavPageState extends State<BottomNavPage> {
   int myIndex = 0;
-  List<Widget> body = [Homepage(), CaseStatusPage(), ProfilePage()];
+  List<Widget> body = [Dashboard(), CaseList(), ProfilePage()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        surfaceTintColor: const Color.fromARGB(255, 27, 27, 27),
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: Text("Case Management system",
-            style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color.fromARGB(255, 27, 27, 27),
+        title: Text(
+          'Case Management',
+          style: TextStyle(
+              color: const Color.fromARGB(255, 0, 0, 0),
+              fontWeight: FontWeight.bold,
+              fontSize: 26),
+        ),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
       backgroundColor: const Color.fromARGB(255, 27, 27, 27),
       body: body[myIndex],

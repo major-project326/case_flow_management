@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:major_project/view/screens/bottom_nav_page.dart';
+import 'package:major_project/view/screens/old/bottom_nav_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

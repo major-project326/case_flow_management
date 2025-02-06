@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:major_project/res/constants/image_paths.dart';
-import 'package:major_project/view/screens/case_upload_page.dart';
+import 'package:major_project/view/screens/old/case_upload_page.dart';
 
 class Homepage extends StatelessWidget {
   const Homepage({super.key});

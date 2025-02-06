@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:major_project/res/constants/image_paths.dart';
-import 'package:major_project/view/screens/initial_page.dart';
+import 'package:major_project/view/screens/old/initial_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:major_project/view/screens/login_page.dart';
-import 'package:major_project/view/screens/register_page.dart';
+import 'package:major_project/view/screens/old/login_page.dart';
+import 'package:major_project/view/screens/old/register_page.dart';
 
 class InitialPage extends StatefulWidget {
   const InitialPage({super.key});
