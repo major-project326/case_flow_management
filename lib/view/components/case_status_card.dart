@@ -1,35 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:major_project/models/case_model.dart';
+import 'package:major_project/res/constants/constants.dart';
+import 'package:major_project/view/screens/case_details_page.dart';
 
 class CaseCard extends StatelessWidget {
-  final String title;
-  final String type;
-  final String caseId;
-  final String status;
-  final double rating;
-  final Color statusColor;
+  final CaseModel caseDetails;
 
-  const CaseCard({
-    super.key,
-    required this.title,
-    required this.type,
-    required this.caseId,
-    required this.status,
-    required this.rating,
-    required this.statusColor,
-  });
+  const CaseCard({super.key, required this.caseDetails});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {},
-      borderRadius: BorderRadius.circular(12),
-      child: Ink(
-        decoration: BoxDecoration(
-            color: Color.fromARGB(255, 50, 50, 50),
-            borderRadius: BorderRadius.circular(12)),
-        padding: EdgeInsets.all(0),
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 5),
+      child: GestureDetector(
+        onTap: () {
+          Get.to(() => CaseDetailsPage(
+                caseDetails: caseDetails,
+              ));
+        },
         child: Card(
-          color: Colors.transparent,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           margin: EdgeInsets.all(0),
@@ -39,43 +30,46 @@ class CaseCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
+                  caseDetails.title,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Case Type: $type',
-                  style: TextStyle(fontSize: 14, color: Colors.white),
+                  'Case Type: ${caseDetails.category}',
+                  style: TextStyle(
+                    fontSize: 14,
+                  ),
                 ),
                 SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Priority: ${rating.toString()} %',
-                      style: TextStyle(fontSize: 14, color: Colors.white),
+                      'Priority: ${caseDetails.priority.toString()} %',
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
                     ),
                     Container(
                       padding:
                           EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.2),
+                        color: Constants.statusColorMap[caseDetails.status]!
+                            .withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        status,
+                        caseDetails.status,
                         style: TextStyle(
-                            color: statusColor, fontWeight: FontWeight.bold),
+                            color: Constants.statusColorMap[caseDetails.status],
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
                 ),
                 SizedBox(height: 8),
                 Text(
-                  caseId,
+                  caseDetails.caseId,
                   style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                 ),
               ],
