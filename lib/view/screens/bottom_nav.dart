@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:major_project/view/screens/add_case_page.dart';
 import 'package:major_project/view/screens/cases_list_page.dart';
 import 'package:major_project/view/screens/dashboard_page.dart';
 import 'package:major_project/view/screens/profile_page.dart';
@@ -44,7 +46,9 @@ class _BottomNavPageState extends State<BottomNavPage> {
       ),
       floatingActionButton: _currentIndex == 1
           ? FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.to(() => const AddCasePage());
+              },
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
               child: Center(

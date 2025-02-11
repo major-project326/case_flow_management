@@ -85,7 +85,7 @@ class _AddCasePageState extends State<AddCasePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Visibility(
-                        visible: true,
+                        visible: _currentPage != 0,
                         child: Expanded(
                           child: GestureDetector(
                             onTap: () {
@@ -121,8 +121,8 @@ class _AddCasePageState extends State<AddCasePage> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        width: 10,
+                      SizedBox(
+                        width: _currentPage != 0 ? 10 : 0,
                       ),
                       Expanded(
                         child: GestureDetector(

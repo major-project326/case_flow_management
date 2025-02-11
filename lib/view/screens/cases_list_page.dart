@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:major_project/models/case_model.dart';
 import 'package:major_project/res/constants/dummy_data.dart';
 import 'package:major_project/view/components/case_status_card.dart';
 import 'package:major_project/view/components/custom_input_field.dart';
+import 'package:major_project/view/screens/case_filters_page.dart';
 
 class CaseListPage extends StatefulWidget {
   CaseListPage({super.key});
@@ -23,6 +25,7 @@ class _CaseListPageState extends State<CaseListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFEFEFEF),
       appBar: AppBar(
         title: Text(
           'CASES',
@@ -48,7 +51,9 @@ class _CaseListPageState extends State<CaseListPage> {
                 prefixIcon: Icons.search,
               )),
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.to(() => CaseFiltersPage());
+                  },
                   icon: Icon(
                     Icons.filter_alt_outlined,
                     size: 35,
