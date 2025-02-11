@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:major_project/view/screens/bottom_nav.dart';
+import 'package:major_project/view/screens/wrapper.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -18,7 +19,7 @@ class _SplashPageState extends State<SplashPage> {
     Timer(Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => BottomNavPage()),
+        MaterialPageRoute(builder: (context) => Wrapper()),
       );
     });
   }

@@ -1,12 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:major_project/view/screens/bottom_nav.dart';
 import 'package:major_project/view/screens/signup_page.dart';
+import 'package:major_project/services/firebase_auth_services.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
 
-  LoginPage({super.key});
+  bool isLoading = false; // To show loading indicator
+
+  void signIn() async {
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all fields")),
+      );
+      return;
+    }
+
+    setState(() {
+      isLoading = true; // Show loading
+    });
+
+    try {
+      var user = await _authService.signInWithEmail(email, password);
+      if (user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Login successful! Welcome ${user.email}")),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const BottomNavPage()),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.toString())),
+      );
+    }
+
+    setState(() {
+      isLoading = false; // Hide loading
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,53 +63,47 @@ class LoginPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Login',
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Email',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: passwordController,
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => BottomNavPage()));
-                String email = emailController.text;
-                String password = passwordController.text;
-                if (email.isNotEmpty && password.isNotEmpty) {
-                  print('Login successful');
-                } else {
-                  print('Please fill in all fields');
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50),
-                  backgroundColor: Color.fromARGB(255, 159, 193, 243)),
-              child: Text(
-                'Login',
-                style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-              ),
-            ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
+            isLoading
+                ? const Center(
+                    child: CircularProgressIndicator()) // Show loading
+                : ElevatedButton(
+                    onPressed: signIn,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: const Color.fromARGB(255, 159, 193, 243),
+                    ),
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Don't have an account?"),
+                const Text("Don't have an account?"),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -73,7 +113,7 @@ class LoginPage extends StatelessWidget {
                       ),
                     );
                   },
-                  child: Text('Sign Up'),
+                  child: const Text('Sign Up'),
                 ),
               ],
             ),

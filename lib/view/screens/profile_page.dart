@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:major_project/view/screens/about_page.dart';
 import 'package:major_project/view/screens/login_page.dart';
+import 'package:major_project/services/firebase_auth_services.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  ProfilePage({super.key});
+  final AuthService _authService = AuthService(); // Create an instance
 
   @override
   Widget build(BuildContext context) {
@@ -138,8 +140,16 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () {
-                Get.to(LoginPage());
+              onTap: () async {
+                await _authService.signOut(); // Call sign-out function
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => LoginPage()), // Navigate to login
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Signed out successfully")),
+                );
               },
               child: Container(
                 height: 60,

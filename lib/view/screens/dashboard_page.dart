@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:major_project/models/case_model.dart';
@@ -14,11 +15,14 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  
+   final user = FirebaseAuth.instance.currentUser;
+
   @override
   void initState() {
     data.sort((a, b) => b['priority'].compareTo(a['priority']));
     super.initState();
-  }
+  } 
 
   @override
   Widget build(BuildContext context) {
