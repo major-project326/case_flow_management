@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:major_project/controllers/cases_controller.dart';
 import 'package:major_project/view/components/custom_input_field.dart';
 
 class AddCaseDescriptionForm extends StatefulWidget {
@@ -9,7 +11,7 @@ class AddCaseDescriptionForm extends StatefulWidget {
 }
 
 class _AddCaseDescriptionFormState extends State<AddCaseDescriptionForm> {
-  final TextEditingController _descriptionController = TextEditingController();
+  final CasesController casesController = Get.put(CasesController());
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class _AddCaseDescriptionFormState extends State<AddCaseDescriptionForm> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: casesController.scanDescriptionByImage,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
@@ -74,7 +76,7 @@ class _AddCaseDescriptionFormState extends State<AddCaseDescriptionForm> {
             height: 15,
           ),
           CustomInputField(
-            controller: _descriptionController,
+            controller: casesController.descriptionController,
             hintText: "Enter Case Description",
             maxLines: 20,
           ),

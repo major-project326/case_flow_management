@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:major_project/controllers/cases_controller.dart';
 import 'package:major_project/res/constants/constants.dart';
 import 'package:major_project/view/components/custom_dropdown_field.dart';
 import 'package:major_project/view/components/custom_input_field.dart';
@@ -12,10 +14,12 @@ class AddCaseDetailsForm extends StatefulWidget {
 }
 
 class _AddCaseDetailsFormState extends State<AddCaseDetailsForm> {
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _caseIdController = TextEditingController();
-  String _caseCategoryLabel = 'Select Category';
-  String _caseCategoryValue = '';
+  final CasesController casesController = Get.put(CasesController());
+  @override
+  void initState() {
+    casesController.generateDefaultCaseId();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +34,7 @@ class _AddCaseDetailsFormState extends State<AddCaseDetailsForm> {
             height: 25,
           ),
           CustomInputField(
-            controller: _caseIdController,
+            controller: casesController.caseIdController,
             hintText: "Enter Case ID",
             labelText: "Case ID:",
           ),
@@ -38,26 +42,26 @@ class _AddCaseDetailsFormState extends State<AddCaseDetailsForm> {
             height: 15,
           ),
           CustomInputField(
-            controller: _titleController,
+            controller: casesController.titleController,
             hintText: "Enter Case Title",
             labelText: "Case Title:",
           ),
           SizedBox(
             height: 15,
           ),
-          CustomDropdownField(
-            value: _caseCategoryLabel,
-            selectionScreen: CategorySelectionPage(),
-            onChange: (val) {
-              setState(() {
-                _caseCategoryLabel = val;
-                if (Constants.caseCategoriesMap[val] != null) {
-                  _caseCategoryValue = Constants.caseCategoriesMap[val]!;
-                }
-              });
-            },
-            labelText: "Case Category:",
-          )
+          Obx(() {
+            return CustomDropdownField(
+              value: casesController.caseCategory.value,
+              selectionScreen: CategorySelectionPage(),
+              onChange: (val) {
+                casesController.caseCategory.value = val;
+                // if (Constants.caseCategoriesMap[val] != null) {
+                //   _caseCategoryValue = Constants.caseCategoriesMap[val]!;
+                // }
+              },
+              labelText: "Case Category:",
+            );
+          })
         ],
       ),
     );
