@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+// ignore: must_be_immutable
 class CustomDropdownField extends StatefulWidget {
   final String value;
   final Widget selectionScreen;

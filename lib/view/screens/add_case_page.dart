@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:major_project/controllers/cases_controller.dart';
 import 'package:major_project/view/components/forms/add_case_description.dart';
 import 'package:major_project/view/components/forms/add_case_details.dart';
 import 'package:major_project/view/components/forms/details_confirmation.dart';
@@ -12,8 +15,21 @@ class AddCasePage extends StatefulWidget {
 }
 
 class _AddCasePageState extends State<AddCasePage> {
+  final CasesController casesController = Get.put(CasesController());
   final PageController _pageController = PageController(initialPage: 0);
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    casesController.generateDefaultCaseId();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    casesController.clearControllers();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +85,7 @@ class _AddCasePageState extends State<AddCasePage> {
                     _currentPage = value;
                   });
                 },
-                children: const [
+                children: [
                   AddCaseDetailsForm(),
                   AddCaseDescriptionForm(),
                   DetailsConfirmation()
@@ -126,43 +142,58 @@ class _AddCasePageState extends State<AddCasePage> {
                       ),
                       Expanded(
                         child: GestureDetector(
-                          onTap: () {
+                          onTap: () async {
+                            if (!casesController.isFormValid(
+                                context, _currentPage)) {
+                              return;
+                            }
+                            if (_currentPage == 2) {
+                              log('message');
+                              await casesController.addCase(context);
+                            }
                             if (_currentPage < 2) {
-                              setState(() {
-                                _currentPage = _currentPage + 1;
-                              });
+                              _currentPage = _currentPage + 1;
+
                               _pageController.animateToPage(_currentPage,
                                   duration: const Duration(milliseconds: 500),
                                   curve: Curves.ease);
                             }
                           },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                      offset: const Offset(0, 2),
-                                      blurRadius: 4,
-                                      color: Colors.black.withOpacity(.25))
-                                ],
-                                color: Colors.black),
-                            height: 50,
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Center(
-                                  child: Text(
-                                    _currentPage == 2 ? 'Confirm' : 'Next',
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600),
+                          child: Obx(() {
+                            return Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        offset: const Offset(0, 2),
+                                        blurRadius: 4,
+                                        color: Colors.black.withOpacity(.25))
+                                  ],
+                                  color: Colors.black),
+                              height: 50,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Center(
+                                    child: casesController.isCasesAdding.value
+                                        ? CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )
+                                        : Text(
+                                            _currentPage == 2
+                                                ? 'Confirm'
+                                                : 'Next',
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600),
+                                          ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
+                            );
+                          }),
                         ),
                       ),
                     ],

@@ -45,7 +45,7 @@ class CaseCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Priority: ${caseDetails.priority.toString()} %',
+                      'Priority: ${caseDetails.priority.toStringAsFixed(2)} %',
                       style: TextStyle(
                         fontSize: 14,
                       ),

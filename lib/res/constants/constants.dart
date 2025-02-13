@@ -20,6 +20,25 @@ class Constants {
     "Other": "Other",
   };
 
+  static final List<String> categoryFilters = [
+    "Criminal",
+    "Constitutional",
+    "Civil",
+    "Tax",
+    "Labour",
+    "Corporate",
+    "Family",
+    "Intellectual Property",
+    "Other",
+  ];
+
+  static final List<String> statusFilters = [
+    "Ongoing",
+    "Closed",
+    "Pending",
+    "In Review"
+  ];
+
   static final List<String> priorityFilters = [
     "0% - 10%",
     "10% - 20%",

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:major_project/controllers/cases_controller.dart';
-import 'package:major_project/res/constants/constants.dart';
 import 'package:major_project/view/components/custom_dropdown_field.dart';
 import 'package:major_project/view/components/custom_input_field.dart';
 import 'package:major_project/view/screens/category_selection_page.dart';
@@ -15,11 +14,6 @@ class AddCaseDetailsForm extends StatefulWidget {
 
 class _AddCaseDetailsFormState extends State<AddCaseDetailsForm> {
   final CasesController casesController = Get.put(CasesController());
-  @override
-  void initState() {
-    casesController.generateDefaultCaseId();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

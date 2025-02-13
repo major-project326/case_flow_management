@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:major_project/controllers/cases_controller.dart';
 import 'package:major_project/models/case_model.dart';
 import 'package:major_project/res/constants/constants.dart';
 
@@ -12,7 +13,14 @@ class CaseDetailsPage extends StatefulWidget {
 }
 
 class _CaseDetailsPageState extends State<CaseDetailsPage> {
-  bool _isOpen = false;
+  final CasesController casesController = Get.put(CasesController());
+
+  @override
+  void dispose() {
+    casesController.setIsDescriptionOpen(false);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,58 +114,60 @@ class _CaseDetailsPageState extends State<CaseDetailsPage> {
                 ],
               ),
             ),
-            Container(
-              width: double.infinity,
-              height: _isOpen ? null : 310,
-              margin: const EdgeInsets.symmetric(vertical: 15),
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(15)),
-              child: Column(
-                children: [
-                  Text(
-                    "Description",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    widget.caseDetails.description,
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(height: 1.5),
-                    maxLines: _isOpen ? null : 8,
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Visibility(
-                    visible: !_isOpen,
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _isOpen = true;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 20),
-                          ),
-                          child: Text('Read More')),
+            Obx(() {
+              return Container(
+                width: double.infinity,
+                height: casesController.isDescriptionOpen.value ? null : 310,
+                margin: const EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(15)),
+                child: Column(
+                  children: [
+                    Text(
+                      "Description",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                  )
-                ],
-              ),
-            )
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Text(
+                      widget.caseDetails.description,
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(height: 1.5),
+                      maxLines:
+                          casesController.isDescriptionOpen.value ? null : 8,
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Visibility(
+                      visible: !casesController.isDescriptionOpen.value,
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              casesController.setIsDescriptionOpen(true);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 20),
+                            ),
+                            child: Text('Read More')),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            })
           ]),
         ),
       ),

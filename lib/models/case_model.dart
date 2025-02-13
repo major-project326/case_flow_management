@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class CaseModel {
   final String id;
   final String caseId;
@@ -10,7 +12,7 @@ class CaseModel {
   final String judgeId;
 
   CaseModel({
-    required this.id,
+    this.id = '',
     required this.caseId,
     required this.title,
     required this.category,
@@ -20,4 +22,33 @@ class CaseModel {
     required this.priority,
     required this.judgeId,
   });
+
+  /// Converts Firestore document to a CaseModel object
+  factory CaseModel.fromJson(Map<String, dynamic> json, String documentId) {
+    return CaseModel(
+      id: documentId,
+      caseId: json['caseId'] ?? '',
+      title: json['title'] ?? '',
+      category: json['category'] ?? '',
+      uploadDateTime: (json['uploadDateTime'] as Timestamp).toDate(),
+      description: json['description'] ?? '',
+      status: json['status'] ?? '',
+      priority: (json['priority'] as num).toDouble(),
+      judgeId: json['judgeId'] ?? '',
+    );
+  }
+
+  /// Converts CaseModel object to a Firestore-compatible JSON map
+  Map<String, dynamic> toJson() {
+    return {
+      "caseId": caseId,
+      "title": title,
+      "category": category,
+      "uploadDateTime": Timestamp.fromDate(uploadDateTime),
+      "description": description,
+      "status": status,
+      "priority": priority,
+      "judgeId": judgeId,
+    };
+  }
 }

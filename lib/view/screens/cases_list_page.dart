@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:major_project/models/case_model.dart';
-import 'package:major_project/res/constants/dummy_data.dart';
+import 'package:major_project/controllers/cases_controller.dart';
 import 'package:major_project/view/components/case_status_card.dart';
 import 'package:major_project/view/components/custom_input_field.dart';
 import 'package:major_project/view/screens/case_filters_page.dart';
@@ -14,11 +13,11 @@ class CaseListPage extends StatefulWidget {
 }
 
 class _CaseListPageState extends State<CaseListPage> {
-  TextEditingController _searchController = TextEditingController();
+  final CasesController casesController = Get.put(CasesController());
 
   @override
   void initState() {
-    data.sort((a, b) => b['priority'].compareTo(a['priority']));
+    casesController.getAllCases();
     super.initState();
   }
 
@@ -46,7 +45,7 @@ class _CaseListPageState extends State<CaseListPage> {
             Row(children: [
               Expanded(
                   child: CustomInputField(
-                controller: _searchController,
+                controller: casesController.searchController,
                 hintText: 'Search for a case...',
                 prefixIcon: Icons.search,
               )),
@@ -64,21 +63,32 @@ class _CaseListPageState extends State<CaseListPage> {
               height: 1,
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: data.length,
-                itemBuilder: (context, index) => CaseCard(
-                  caseDetails: CaseModel(
-                      id: data[index]['id'],
-                      caseId: data[index]['id'],
-                      title: data[index]['title'],
-                      category: data[index]['type'],
-                      uploadDateTime: DateTime.now(),
-                      description: data[index]['text'],
-                      status: data[index]['status'],
-                      priority: data[index]['priority'],
-                      judgeId: ''),
-                ),
-              ),
+              child: Obx(() {
+                if (casesController.isCasesLoading.value) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.black,
+                    ),
+                  );
+                } else {
+                  if (casesController.cases.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No Cases',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  } else {
+                    return ListView.builder(
+                      itemCount: casesController.cases.length,
+                      itemBuilder: (context, index) => CaseCard(
+                        caseDetails: casesController.cases[index],
+                      ),
+                    );
+                  }
+                }
+              }),
             ),
           ],
         ),

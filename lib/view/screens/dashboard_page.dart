@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:major_project/controllers/cases_controller.dart';
 import 'package:major_project/models/case_model.dart';
 import 'package:major_project/res/constants/constants.dart';
-import 'package:major_project/res/constants/dummy_data.dart';
 import 'package:major_project/view/screens/add_case_page.dart';
 import 'package:major_project/view/screens/case_details_page.dart';
 
@@ -14,11 +14,7 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  @override
-  void initState() {
-    data.sort((a, b) => b['priority'].compareTo(a['priority']));
-    super.initState();
-  }
+  final CasesController casesController = Get.put(CasesController());
 
   @override
   Widget build(BuildContext context) {
@@ -41,25 +37,25 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(
               height: 20,
             ),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CaseStatusCard(title: 'Ongoing', count: 12),
+                CaseStatusCard(title: 'Ongoing'),
                 SizedBox(
                   width: 10,
                 ),
-                CaseStatusCard(title: 'In Review', count: 32),
+                CaseStatusCard(title: 'In Review'),
               ],
             ),
             const SizedBox(height: 10),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CaseStatusCard(title: 'Pending', count: 26),
+                CaseStatusCard(title: 'Pending'),
                 SizedBox(
                   width: 10,
                 ),
-                CaseStatusCard(title: 'Closed', count: 42),
+                CaseStatusCard(title: 'Closed'),
               ],
             ),
             const SizedBox(height: 10),
@@ -70,7 +66,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 color: const Color.fromARGB(100, 159, 193, 243),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Column(
+              child: Column(
                 children: [
                   Text(
                     "Total",
@@ -81,7 +77,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '55',
+                    casesController.summary['Total']!.toString(),
                     style: TextStyle(
                         color: Color.fromARGB(255, 0, 0, 0),
                         fontSize: 22,
@@ -120,29 +116,21 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
             const SizedBox(height: 40),
-            const Text(
-              'Top Priority Cases',
-              style: TextStyle(
-                color: Color.fromARGB(255, 0, 0, 0),
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            if (casesController.topCases.isNotEmpty)
+              const Text(
+                'Top Priority Cases',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 0, 0, 0),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
             const SizedBox(height: 10),
-            ...List.generate(3, (index) {
-              return TopCaseCard(
-                caseDetails: CaseModel(
-                    id: data[index]['id'],
-                    caseId: data[index]['id'],
-                    title: data[index]['title'],
-                    category: data[index]['type'],
-                    uploadDateTime: DateTime.now(),
-                    description: data[index]['text'],
-                    status: data[index]['status'],
-                    priority: data[index]['priority'],
-                    judgeId: ''),
-              );
-            }),
+            if (casesController.topCases.isNotEmpty)
+              ...List.generate(casesController.topCases.length, (index) {
+                return TopCaseCard(
+                    caseDetails: casesController.topCases[index]);
+              }),
           ],
         ),
       ),
@@ -152,14 +140,13 @@ class _DashboardPageState extends State<DashboardPage> {
 
 class CaseStatusCard extends StatelessWidget {
   final String title;
-  final int count;
 
-  const CaseStatusCard({
+  CaseStatusCard({
     super.key,
     required this.title,
-    required this.count,
   });
 
+  final CasesController casesController = Get.put(CasesController());
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -180,7 +167,7 @@ class CaseStatusCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '$count',
+              casesController.summary[title]!.toString(),
               style: const TextStyle(
                   color: Color.fromARGB(255, 0, 0, 0),
                   fontSize: 22,
@@ -209,6 +196,7 @@ class TopCaseCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5),
         padding: const EdgeInsets.fromLTRB(5, 5, 0, 5),
+        color: Colors.transparent,
         child: Row(
           children: [
             const Icon(Icons.calendar_today,
