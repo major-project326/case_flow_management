@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:major_project/controllers/cases_controller.dart';
@@ -6,7 +7,7 @@ import 'package:major_project/view/components/custom_input_field.dart';
 import 'package:major_project/view/screens/case_filters_page.dart';
 
 class CaseListPage extends StatefulWidget {
-  CaseListPage({super.key});
+  const CaseListPage({super.key});
 
   @override
   State<CaseListPage> createState() => _CaseListPageState();
@@ -45,50 +46,66 @@ class _CaseListPageState extends State<CaseListPage> {
             Row(children: [
               Expanded(
                   child: CustomInputField(
-                controller: casesController.searchController,
                 hintText: 'Search for a case...',
                 prefixIcon: Icons.search,
+                onChange: (p0) {
+                  casesController.handleSearchChange(p0);
+                },
               )),
-              IconButton(
-                  onPressed: () {
-                    Get.to(() => CaseFiltersPage());
-                  },
-                  icon: Icon(
-                    Icons.filter_alt_outlined,
-                    size: 35,
-                  ))
+              Obx(() {
+                return IconButton(
+                    onPressed: () {
+                      Get.to(() => CaseFiltersPage());
+                    },
+                    icon: badges.Badge(
+                      badgeContent: Text(
+                          casesController.getFiltersCount().toString(),
+                          style: TextStyle(color: Colors.white)),
+                      showBadge: casesController.areFiltersApplied(),
+                      badgeStyle: badges.BadgeStyle(
+                          badgeColor: const Color(0xFFC8362C)),
+                      child: Icon(
+                        Icons.filter_alt_outlined,
+                        size: 35,
+                      ),
+                    ));
+              })
             ]),
             const SizedBox(height: 16),
             Divider(
               height: 1,
             ),
             Expanded(
-              child: Obx(() {
-                if (casesController.isCasesLoading.value) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.black,
-                    ),
-                  );
-                } else {
-                  if (casesController.cases.isEmpty) {
+              child: RefreshIndicator(
+                onRefresh: () => casesController.getAllCases(),
+                color: Colors.black,
+                child: Obx(() {
+                  if (casesController.isCasesLoading.value) {
                     return Center(
-                      child: Text(
-                        'No Cases',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
                       ),
                     );
                   } else {
-                    return ListView.builder(
-                      itemCount: casesController.cases.length,
-                      itemBuilder: (context, index) => CaseCard(
-                        caseDetails: casesController.cases[index],
-                      ),
-                    );
+                    if (casesController.filteredCases.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No Cases',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      );
+                    } else {
+                      return ListView.builder(
+                        itemCount: casesController.filteredCases.length,
+                        itemBuilder: (context, index) => CaseCard(
+                          caseDetails: casesController.filteredCases[index],
+                        ),
+                      );
+                    }
                   }
-                }
-              }),
+                }),
+              ),
             ),
           ],
         ),

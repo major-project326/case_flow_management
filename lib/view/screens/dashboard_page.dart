@@ -185,13 +185,14 @@ class TopCaseCard extends StatelessWidget {
 
   TopCaseCard({super.key, required this.caseDetails});
 
+  final CasesController casesController = Get.put(CasesController());
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.to(() => CaseDetailsPage(
-              caseDetails: caseDetails,
-            ));
+        casesController.setCurrentCaseDetails(caseDetails);
+        Get.to(() => CaseDetailsPage());
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5),

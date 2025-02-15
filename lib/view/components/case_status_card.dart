@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:major_project/controllers/cases_controller.dart';
 import 'package:major_project/models/case_model.dart';
 import 'package:major_project/res/constants/constants.dart';
 import 'package:major_project/view/screens/case_details_page.dart';
@@ -7,7 +8,9 @@ import 'package:major_project/view/screens/case_details_page.dart';
 class CaseCard extends StatelessWidget {
   final CaseModel caseDetails;
 
-  const CaseCard({super.key, required this.caseDetails});
+  CaseCard({super.key, required this.caseDetails});
+
+  final CasesController casesController = Get.put(CasesController());
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +18,8 @@ class CaseCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 5),
       child: GestureDetector(
         onTap: () {
-          Get.to(() => CaseDetailsPage(
-                caseDetails: caseDetails,
-              ));
+          casesController.setCurrentCaseDetails(caseDetails);
+          Get.to(() => CaseDetailsPage());
         },
         child: Card(
           color: Colors.white,

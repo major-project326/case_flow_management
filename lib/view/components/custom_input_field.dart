@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class CustomInputField extends StatefulWidget {
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final String hintText;
   String? labelText;
   IconData? prefixIcon;
   int? maxLines;
+  Function(String)? onChange;
   CustomInputField(
       {super.key,
-      required this.controller,
+      this.controller,
       required this.hintText,
       this.labelText,
       this.maxLines,
-      this.prefixIcon});
+      this.prefixIcon,
+      this.onChange});
 
   @override
   State<CustomInputField> createState() => _CustomInputFieldState();
@@ -42,6 +44,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
             focusNode.unfocus();
           },
           controller: widget.controller,
+          onChanged: widget.onChange,
           decoration: InputDecoration(
             prefixIcon: widget.prefixIcon != null
                 ? Icon(widget.prefixIcon, color: Colors.black)

@@ -5,10 +5,12 @@ import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:intl/intl.dart';
 import 'package:major_project/models/case_model.dart';
 import 'package:major_project/repository/cases_repository.dart';
 import 'package:major_project/res/constants/constants.dart';
 import 'package:major_project/utils/snackbar_utils.dart';
+import 'package:major_project/utils/utils.dart';
 
 class CasesController extends GetxController {
   //ADD CASES ----------------------------------------------------------
@@ -54,7 +56,8 @@ class CasesController extends GetxController {
         final RecognizedText recognizedText =
             await textRecognizer.processImage(inputImage);
 
-        descriptionController.text = recognizedText.text;
+        descriptionController.text =
+            recognizedText.text.replaceAll("\n", " ").trim();
       } catch (e) {
         print("Error processing image: $e");
       } finally {
@@ -87,16 +90,43 @@ class CasesController extends GetxController {
 
   // FILTER & SEARCH CASES --------------------------------------------------------
 
-  TextEditingController searchController = TextEditingController();
-
-  List<String> categories = ["Category", "Status", "Priority"];
+  List<String> categories = ["Category", "Status", "Priority", "Date"];
   Rx<int> selectedCategory = 0.obs;
+  RxList<String> dates = <String>[].obs;
 
-  RxMap<String, Set<String>> selectedFilters =
-      <String, Set<String>>{"Category": {}, "Status": {}, "Priority": {}}.obs;
+  RxMap<String, Set<String>> selectedFilters = <String, Set<String>>{
+    "Category": {},
+    "Status": {},
+    "Priority": {},
+    "Date": {}
+  }.obs;
 
   void setSelectedCategory(int value) {
     selectedCategory.value = value;
+  }
+
+  void generateDates() {
+    dates.value = Utils.generateMonthYearList();
+    dates.refresh();
+  }
+
+  bool areFiltersApplied() {
+    return selectedFilters.values.any((filterSet) => filterSet.isNotEmpty);
+  }
+
+  int getFiltersCount() {
+    return selectedFilters.values.fold(0, (sum, set) => sum + set.length);
+  }
+
+  handleSearchChange(String query) {
+    if (query.isEmpty) {
+      filteredCases.value = cases;
+    } else {
+      filteredCases.value = cases.where((item) {
+        return item.title.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    }
+    filteredCases.refresh();
   }
 
   bool isAllSelectedEnabled() {
@@ -112,6 +142,9 @@ class CasesController extends GetxController {
         selectedFilters["Priority"]!.length ==
             Constants.priorityFilters.length) {
       return true;
+    } else if (selectedCategory.value == 3 &&
+        selectedFilters["Date"]!.length == dates.length) {
+      return true;
     }
     return false;
   }
@@ -120,7 +153,8 @@ class CasesController extends GetxController {
     selectedFilters.value = <String, Set<String>>{
       "Category": {},
       "Status": {},
-      "Priority": {}
+      "Priority": {},
+      "Date": {}
     };
     selectedFilters.refresh();
   }
@@ -154,6 +188,11 @@ class CasesController extends GetxController {
             selectedFilters["Priority"]!.add(item);
           }
           break;
+        case 3:
+          for (String item in dates) {
+            selectedFilters["Date"]!.add(item);
+          }
+          break;
       }
     } else if (!value) {
       switch (selectedCategory.value) {
@@ -172,38 +211,86 @@ class CasesController extends GetxController {
             selectedFilters["Priority"]!.remove(item);
           }
           break;
+        case 3:
+          for (String item in dates) {
+            selectedFilters["Date"]!.remove(item);
+          }
+          break;
       }
     }
     selectedFilters.refresh();
+  }
+
+  void handleFilterCases() {
+    filteredCases.value = cases.where((caseItem) {
+      bool categoryMatch = selectedFilters["Category"] == null ||
+          selectedFilters["Category"]!.isEmpty ||
+          selectedFilters["Category"]!.contains(caseItem.category);
+      bool statusMatch = selectedFilters["Status"] == null ||
+          selectedFilters["Status"]!.isEmpty ||
+          selectedFilters["Status"]!.contains(caseItem.status);
+
+      // Extract year-month from uploadDateTime in "YYYY-MM" format
+      String caseMonth =
+          DateFormat("MMMM yyyy").format(caseItem.uploadDateTime);
+      bool monthMatch = selectedFilters["Date"] == null ||
+          selectedFilters["Date"]!.isEmpty ||
+          selectedFilters["Date"]!.contains(caseMonth);
+
+      return categoryMatch && statusMatch && monthMatch;
+    }).toList();
+
+    Get.back();
   }
 
   // CASES DISPLAY -------------------------------------------------------
 
   final CasesRepository _casesRepository = CasesRepository();
   RxList<CaseModel> cases = <CaseModel>[].obs;
+  RxList<CaseModel> filteredCases = <CaseModel>[].obs;
   RxList<CaseModel> topCases = <CaseModel>[].obs;
   RxMap<String, int> summary = <String, int>{}.obs;
+  Rx<CaseModel?> caseDetails = null.obs;
   Rx<bool> isDescriptionOpen = false.obs;
   Rx<bool> isCasesLoading = false.obs;
-  Rx<bool> isCasesAdding = false.obs;
+  Rx<bool> isCaseAdding = false.obs;
+  Rx<bool> isCaseUpdating = false.obs;
+  Rx<bool> isCaseUndoing = false.obs;
 
   setIsCasesLoading(bool value) {
     isCasesLoading.value = value;
   }
 
-  setIsCasesAdding(bool value) {
-    isCasesAdding.value = value;
+  setIsCaseAdding(bool value) {
+    isCaseAdding.value = value;
+  }
+
+  setIsCaseUpdating(bool value) {
+    isCaseUpdating.value = value;
+  }
+
+  setIsCaseUndoing(bool value) {
+    isCaseUndoing.value = value;
   }
 
   setIsDescriptionOpen(bool value) {
     isDescriptionOpen.value = value;
   }
 
+  setCurrentCaseDetails(CaseModel value) {
+    if (caseDetails.value == null) {
+      caseDetails = value.obs;
+    } else {
+      caseDetails.value = value;
+    }
+  }
+
   Future<void> getAllCases() async {
     isCasesLoading = true.obs;
     try {
       cases.value = await _casesRepository.getAllCases();
-      cases.refresh();
+      filteredCases.value = cases;
+      filteredCases.refresh();
     } catch (e) {
       print(e);
     } finally {
@@ -230,7 +317,7 @@ class CasesController extends GetxController {
   }
 
   Future<void> addCase(BuildContext context) async {
-    setIsCasesAdding(true);
+    setIsCaseAdding(true);
     try {
       double priority = await _casesRepository.getCasePriority({
         "text": descriptionController.text,
@@ -238,8 +325,8 @@ class CasesController extends GetxController {
       });
 
       CaseModel newCase = CaseModel(
-          caseId: caseIdController.text,
-          title: titleController.text,
+          caseId: caseIdController.text.trim(),
+          title: titleController.text.trim(),
           category: caseCategory.value,
           uploadDateTime: DateTime.now(),
           description: descriptionController.text,
@@ -250,11 +337,50 @@ class CasesController extends GetxController {
       SnackBarUtils.showSnackBar(context, "Case added successfully");
       Get.back();
       clearControllers();
-      await getAllCases();
+      getAllCases();
+      getTop3Cases();
+      getCaseSummary();
     } catch (e) {
       print(e);
     } finally {
-      setIsCasesAdding(false);
+      setIsCaseAdding(false);
+    }
+  }
+
+  Future<void> updateCaseStatus(BuildContext context, bool isUpdating) async {
+    try {
+      if (isUpdating) {
+        setIsCaseUpdating(true);
+        if (Constants.caseStatus.indexOf(caseDetails.value!.status) < 3) {
+          String nextStatus = Constants.caseStatus[
+              Constants.caseStatus.indexOf(caseDetails.value!.status) + 1];
+          await _casesRepository.updateCaseStatus(
+              caseDetails.value!.id, nextStatus);
+          setCurrentCaseDetails(
+              caseDetails.value!.copyWith(status: nextStatus));
+          SnackBarUtils.showSnackBar(
+              context, "Case status updated successfully");
+        }
+      } else {
+        setIsCaseUndoing(true);
+        if (Constants.caseStatus.indexOf(caseDetails.value!.status) > 0) {
+          String previousStatus = Constants.caseStatus[
+              Constants.caseStatus.indexOf(caseDetails.value!.status) - 1];
+          await _casesRepository.updateCaseStatus(
+              caseDetails.value!.id, previousStatus);
+          setCurrentCaseDetails(
+              caseDetails.value!.copyWith(status: previousStatus));
+          SnackBarUtils.showSnackBar(
+              context, "Case status updated successfully");
+        }
+      }
+      getAllCases();
+      getCaseSummary();
+    } catch (e) {
+      print(e);
+    } finally {
+      setIsCaseUpdating(false);
+      setIsCaseUndoing(false);
     }
   }
 }

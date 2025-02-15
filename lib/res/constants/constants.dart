@@ -20,7 +20,7 @@ class Constants {
     "Other": "Other",
   };
 
-  static final List<String> categoryFilters = [
+  static final List<String> caseCategories = [
     "Criminal",
     "Constitutional",
     "Civil",
@@ -32,11 +32,11 @@ class Constants {
     "Other",
   ];
 
-  static final List<String> statusFilters = [
+  static final List<String> caseStatus = [
+    "Pending",
+    "In Review",
     "Ongoing",
     "Closed",
-    "Pending",
-    "In Review"
   ];
 
   static final List<String> priorityFilters = [

@@ -176,7 +176,7 @@ class _AddCasePageState extends State<AddCasePage> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10),
                                   child: Center(
-                                    child: casesController.isCasesAdding.value
+                                    child: casesController.isCaseAdding.value
                                         ? CircularProgressIndicator(
                                             color: Colors.white,
                                           )

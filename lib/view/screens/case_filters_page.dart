@@ -14,6 +14,12 @@ class _CaseFiltersPageState extends State<CaseFiltersPage> {
   final CasesController casesController = Get.put(CasesController());
 
   @override
+  void initState() {
+    super.initState();
+    casesController.generateDates();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: const Color(0xFFEFEFEF),
@@ -65,75 +71,98 @@ class _CaseFiltersPageState extends State<CaseFiltersPage> {
               ),
               Container(
                 width: MediaQuery.of(context).size.width * .6,
+                height: double.infinity,
                 padding: const EdgeInsets.all(16.0),
                 decoration: const BoxDecoration(
                     border: Border(
                   top: BorderSide(color: Color(0xFFBABABA), width: .5),
                 )),
-                child: Column(
-                  children: [
-                    CheckboxListTile(
-                      contentPadding: const EdgeInsets.all(0),
-                      checkColor: Colors.white,
-                      activeColor: Colors.black,
-                      title: Text('Select All', style: TextStyle(fontSize: 14)),
-                      value: casesController.isAllSelectedEnabled(),
-                      onChanged: (val) {
-                        casesController.handleSelectAll(val);
-                      },
-                    ),
-                    if (casesController.selectedCategory.value == 0)
-                      ...List.generate(
-                        Constants.categoryFilters.length,
-                        (index) => CheckboxListTile(
-                          contentPadding: const EdgeInsets.all(0),
-                          checkColor: Colors.white,
-                          activeColor: Colors.black,
-                          title: Text(Constants.categoryFilters[index],
-                              style: TextStyle(fontSize: 14)),
-                          value: casesController.selectedFilters["Category"]!
-                              .contains(Constants.categoryFilters[index]),
-                          onChanged: (val) {
-                            casesController.handleFilterPressed(
-                                "Category", Constants.categoryFilters[index]);
-                          },
-                        ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CheckboxListTile(
+                        contentPadding: const EdgeInsets.all(0),
+                        checkColor: Colors.white,
+                        activeColor: Colors.black,
+                        title:
+                            Text('Select All', style: TextStyle(fontSize: 14)),
+                        value: casesController.isAllSelectedEnabled(),
+                        onChanged: (val) {
+                          casesController.handleSelectAll(val);
+                        },
                       ),
-                    if (casesController.selectedCategory.value == 1)
-                      ...List.generate(
-                        Constants.statusFilters.length,
-                        (index) => CheckboxListTile(
-                          contentPadding: const EdgeInsets.all(0),
-                          checkColor: Colors.white,
-                          activeColor: Colors.black,
-                          title: Text(Constants.statusFilters[index],
-                              style: TextStyle(fontSize: 14)),
-                          value: casesController.selectedFilters["Status"]!
-                              .contains(Constants.statusFilters[index]),
-                          onChanged: (val) {
-                            casesController.handleFilterPressed(
-                                "Status", Constants.statusFilters[index]);
-                          },
+                      if (casesController.selectedCategory.value == 0)
+                        ...List.generate(
+                          Constants.caseCategories.length,
+                          (index) => CheckboxListTile(
+                            contentPadding: const EdgeInsets.all(0),
+                            checkColor: Colors.white,
+                            activeColor: Colors.black,
+                            title: Text(Constants.caseCategories[index],
+                                style: TextStyle(fontSize: 14)),
+                            value: casesController.selectedFilters["Category"]!
+                                .contains(Constants.caseCategories[index]),
+                            onChanged: (val) {
+                              casesController.handleFilterPressed(
+                                  "Category", Constants.caseCategories[index]);
+                            },
+                          ),
                         ),
-                      ),
-                    if (casesController.selectedCategory.value == 2)
-                      ...List.generate(
-                        Constants.priorityFilters.length,
-                        (index) => CheckboxListTile(
-                          contentPadding: const EdgeInsets.all(0),
-                          checkColor: Colors.white,
-                          activeColor: Colors.black,
-                          title: Text(Constants.priorityFilters[index],
-                              style: TextStyle(fontSize: 14)),
-                          value: casesController.selectedFilters["Priority"]!
-                              .contains(Constants.priorityFilters[index]),
-                          onChanged: (val) {
-                            casesController.handleFilterPressed(
-                                "Priority", Constants.priorityFilters[index]);
-                          },
+                      if (casesController.selectedCategory.value == 1)
+                        ...List.generate(
+                          Constants.caseStatus.length,
+                          (index) => CheckboxListTile(
+                            contentPadding: const EdgeInsets.all(0),
+                            checkColor: Colors.white,
+                            activeColor: Colors.black,
+                            title: Text(Constants.caseStatus[index],
+                                style: TextStyle(fontSize: 14)),
+                            value: casesController.selectedFilters["Status"]!
+                                .contains(Constants.caseStatus[index]),
+                            onChanged: (val) {
+                              casesController.handleFilterPressed(
+                                  "Status", Constants.caseStatus[index]);
+                            },
+                          ),
                         ),
-                      )
-                  ],
+                      if (casesController.selectedCategory.value == 2)
+                        ...List.generate(
+                          Constants.priorityFilters.length,
+                          (index) => CheckboxListTile(
+                            contentPadding: const EdgeInsets.all(0),
+                            checkColor: Colors.white,
+                            activeColor: Colors.black,
+                            title: Text(Constants.priorityFilters[index],
+                                style: TextStyle(fontSize: 14)),
+                            value: casesController.selectedFilters["Priority"]!
+                                .contains(Constants.priorityFilters[index]),
+                            onChanged: (val) {
+                              casesController.handleFilterPressed(
+                                  "Priority", Constants.priorityFilters[index]);
+                            },
+                          ),
+                        ),
+                      if (casesController.selectedCategory.value == 3)
+                        ...List.generate(casesController.dates.length, (index) {
+                          return CheckboxListTile(
+                            contentPadding: const EdgeInsets.all(0),
+                            checkColor: Colors.white,
+                            activeColor: Colors.black,
+                            title: Text(casesController.dates[index],
+                                style: TextStyle(fontSize: 14)),
+                            value: casesController.selectedFilters["Date"]!
+                                .contains(casesController.dates[index]),
+                            onChanged: (val) {
+                              casesController.handleFilterPressed(
+                                  "Date", casesController.dates[index]);
+                            },
+                          );
+                        })
+                    ],
+                  ),
                 ),
               )
             ],
@@ -152,9 +181,7 @@ class _CaseFiltersPageState extends State<CaseFiltersPage> {
                   visible: true,
                   child: Expanded(
                     child: GestureDetector(
-                      onTap: () {
-                        casesController.clearAllFilters();
-                      },
+                      onTap: casesController.clearAllFilters,
                       child: Container(
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black),
@@ -182,7 +209,7 @@ class _CaseFiltersPageState extends State<CaseFiltersPage> {
                 ),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: casesController.handleFilterCases,
                     child: Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),

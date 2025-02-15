@@ -91,4 +91,14 @@ class CasesRepository {
       rethrow;
     }
   }
+
+  Future<void> updateCaseStatus(String caseId, String status) async {
+    try {
+      Map<String, dynamic> updatedtatus = {"status": status};
+
+      _fireStoreServices.updateCase(caseId, updatedtatus);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

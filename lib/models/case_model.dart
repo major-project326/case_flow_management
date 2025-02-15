@@ -51,4 +51,28 @@ class CaseModel {
       "judgeId": judgeId,
     };
   }
+
+  CaseModel copyWith({
+    String? id,
+    String? caseId,
+    String? title,
+    String? category,
+    DateTime? uploadDateTime,
+    String? description,
+    String? status,
+    double? priority,
+    String? judgeId,
+  }) {
+    return CaseModel(
+      id: id ?? this.id,
+      caseId: caseId ?? this.caseId,
+      title: title ?? this.title,
+      category: category ?? this.category,
+      uploadDateTime: uploadDateTime ?? this.uploadDateTime,
+      description: description ?? this.description,
+      status: status ?? this.status,
+      priority: priority ?? this.priority,
+      judgeId: judgeId ?? this.judgeId,
+    );
+  }
 }
