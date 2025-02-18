@@ -90,16 +90,12 @@ class CasesController extends GetxController {
 
   // FILTER & SEARCH CASES --------------------------------------------------------
 
-  List<String> categories = ["Category", "Status", "Priority", "Date"];
+  List<String> categories = ["Category", "Status", "Date"];
   Rx<int> selectedCategory = 0.obs;
   RxList<String> dates = <String>[].obs;
 
-  RxMap<String, Set<String>> selectedFilters = <String, Set<String>>{
-    "Category": {},
-    "Status": {},
-    "Priority": {},
-    "Date": {}
-  }.obs;
+  RxMap<String, Set<String>> selectedFilters =
+      <String, Set<String>>{"Category": {}, "Status": {}, "Date": {}}.obs;
 
   void setSelectedCategory(int value) {
     selectedCategory.value = value;
@@ -139,10 +135,6 @@ class CasesController extends GetxController {
             Constants.statusColorMap.keys.length) {
       return true;
     } else if (selectedCategory.value == 2 &&
-        selectedFilters["Priority"]!.length ==
-            Constants.priorityFilters.length) {
-      return true;
-    } else if (selectedCategory.value == 3 &&
         selectedFilters["Date"]!.length == dates.length) {
       return true;
     }
@@ -153,7 +145,6 @@ class CasesController extends GetxController {
     selectedFilters.value = <String, Set<String>>{
       "Category": {},
       "Status": {},
-      "Priority": {},
       "Date": {}
     };
     selectedFilters.refresh();
@@ -183,12 +174,8 @@ class CasesController extends GetxController {
             selectedFilters["Status"]!.add(item);
           }
           break;
+
         case 2:
-          for (String item in Constants.priorityFilters) {
-            selectedFilters["Priority"]!.add(item);
-          }
-          break;
-        case 3:
           for (String item in dates) {
             selectedFilters["Date"]!.add(item);
           }
@@ -206,12 +193,8 @@ class CasesController extends GetxController {
             selectedFilters["Status"]!.remove(item);
           }
           break;
+
         case 2:
-          for (String item in Constants.priorityFilters) {
-            selectedFilters["Priority"]!.remove(item);
-          }
-          break;
-        case 3:
           for (String item in dates) {
             selectedFilters["Date"]!.remove(item);
           }
@@ -230,7 +213,6 @@ class CasesController extends GetxController {
           selectedFilters["Status"]!.isEmpty ||
           selectedFilters["Status"]!.contains(caseItem.status);
 
-      // Extract year-month from uploadDateTime in "YYYY-MM" format
       String caseMonth =
           DateFormat("MMMM yyyy").format(caseItem.uploadDateTime);
       bool monthMatch = selectedFilters["Date"] == null ||

@@ -129,23 +129,6 @@ class _CaseFiltersPageState extends State<CaseFiltersPage> {
                           ),
                         ),
                       if (casesController.selectedCategory.value == 2)
-                        ...List.generate(
-                          Constants.priorityFilters.length,
-                          (index) => CheckboxListTile(
-                            contentPadding: const EdgeInsets.all(0),
-                            checkColor: Colors.white,
-                            activeColor: Colors.black,
-                            title: Text(Constants.priorityFilters[index],
-                                style: TextStyle(fontSize: 14)),
-                            value: casesController.selectedFilters["Priority"]!
-                                .contains(Constants.priorityFilters[index]),
-                            onChanged: (val) {
-                              casesController.handleFilterPressed(
-                                  "Priority", Constants.priorityFilters[index]);
-                            },
-                          ),
-                        ),
-                      if (casesController.selectedCategory.value == 3)
                         ...List.generate(casesController.dates.length, (index) {
                           return CheckboxListTile(
                             contentPadding: const EdgeInsets.all(0),
