@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class HttpService {
   Future<dynamic> postRequest(Map<String, dynamic> data) async {
     const String baseUrl =
-        'https://case-flow-management-server.onrender.com/predict';
+        'https://case-flow-management-server-8i5l.onrender.com/predict';
     final url = Uri.parse(baseUrl);
     final response = await http.post(
       url,
