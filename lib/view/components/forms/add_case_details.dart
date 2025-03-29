@@ -49,9 +49,6 @@ class _AddCaseDetailsFormState extends State<AddCaseDetailsForm> {
               selectionScreen: CategorySelectionPage(),
               onChange: (val) {
                 casesController.caseCategory.value = val;
-                // if (Constants.caseCategoriesMap[val] != null) {
-                //   _caseCategoryValue = Constants.caseCategoriesMap[val]!;
-                // }
               },
               labelText: "Case Category:",
             );

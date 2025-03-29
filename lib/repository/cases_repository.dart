@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:major_project/models/case_model.dart';
 import 'package:major_project/services/firestore_service.dart';
@@ -75,9 +77,10 @@ class CasesRepository {
   Future<double> getCasePriority(Map<String, String> data) async {
     try {
       dynamic response = await _httpService.postRequest(data);
-
+      log(response.toString());
       return response['priority'];
     } catch (e) {
+      log(e.toString());
       rethrow;
     }
   }
@@ -92,11 +95,10 @@ class CasesRepository {
     }
   }
 
-  Future<void> updateCaseStatus(String caseId, String status) async {
+  Future<void> updateCase(
+      String caseId, Map<String, dynamic> caseDetails) async {
     try {
-      Map<String, dynamic> updatedtatus = {"status": status};
-
-      _fireStoreServices.updateCase(caseId, updatedtatus);
+      _fireStoreServices.updateCase(caseId, caseDetails);
     } catch (e) {
       rethrow;
     }

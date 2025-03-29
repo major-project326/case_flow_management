@@ -1,5 +1,6 @@
+import 'dart:developer';
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' hide log;
 
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,16 @@ class CasesController extends GetxController {
   TextEditingController caseIdController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   Rx<String> caseCategory = "Select Category".obs;
+  Rx<bool> isDescriptionOpen = false.obs;
+  Rx<bool> isCaseAdding = false.obs;
+
+  setIsCaseAdding(bool value) {
+    isCaseAdding.value = value;
+  }
+
+  setIsDescriptionOpen(bool value) {
+    isDescriptionOpen.value = value;
+  }
 
   generateDefaultCaseId() {
     const String prefix = "#";
@@ -86,6 +97,143 @@ class CasesController extends GetxController {
       return false;
     }
     return true;
+  }
+
+  Future<void> addCase(BuildContext context) async {
+    setIsCaseAdding(true);
+    try {
+      double priority = await _casesRepository.getCasePriority({
+        "text": descriptionController.text.trim(),
+        "case_type": Constants.caseCategoriesMap[caseCategory.value]!
+      });
+
+      CaseModel newCase = CaseModel(
+          caseId: caseIdController.text.trim(),
+          title: titleController.text.trim(),
+          category: caseCategory.value,
+          uploadDateTime: DateTime.now(),
+          description: descriptionController.text,
+          status: "Pending",
+          priority: priority,
+          judgeId: "");
+      await _casesRepository.addCase(newCase);
+      SnackBarUtils.showSnackBar(context, "Case added successfully");
+      Get.back();
+
+      getAllCases();
+      getTop3Cases();
+      getCaseSummary();
+    } catch (e) {
+      print(e);
+    } finally {
+      setIsCaseAdding(false);
+    }
+  }
+
+  // UPDATE CASE -------------------------------------------------------------
+
+  Rx<bool> isCaseDetailsUpdating = false.obs;
+  Rx<bool> isCaseStatusUpdating = false.obs;
+  Rx<bool> isCaseStatusUndoing = false.obs;
+
+  setIsCaseDetailsUpdating(bool value) {
+    isCaseDetailsUpdating.value = value;
+  }
+
+  setIsCaseStatusUpdating(bool value) {
+    isCaseStatusUpdating.value = value;
+  }
+
+  setIsCaseStatusUndoing(bool value) {
+    isCaseStatusUndoing.value = value;
+  }
+
+  void fillUpdateForm() {
+    descriptionController.text = caseDetails.value!.description;
+    caseIdController.text = caseDetails.value!.caseId;
+    titleController.text = caseDetails.value!.title;
+    caseCategory.value = caseDetails.value!.category;
+  }
+
+  Future<void> updateCaseStatus(BuildContext context, bool isUpdating) async {
+    if (isCaseStatusUndoing.value || isCaseStatusUpdating.value) {
+      return;
+    }
+    try {
+      if (isUpdating) {
+        setIsCaseStatusUpdating(true);
+        if (Constants.caseStatus.indexOf(caseDetails.value!.status) < 3) {
+          String nextStatus = Constants.caseStatus[
+              Constants.caseStatus.indexOf(caseDetails.value!.status) + 1];
+          await _casesRepository
+              .updateCase(caseDetails.value!.id, {"status": nextStatus});
+          setCurrentCaseDetails(
+              caseDetails.value!.copyWith(status: nextStatus));
+          SnackBarUtils.showSnackBar(
+              context, "Case status updated successfully");
+        }
+      } else {
+        setIsCaseStatusUndoing(true);
+        if (Constants.caseStatus.indexOf(caseDetails.value!.status) > 0) {
+          String previousStatus = Constants.caseStatus[
+              Constants.caseStatus.indexOf(caseDetails.value!.status) - 1];
+          await _casesRepository
+              .updateCase(caseDetails.value!.id, {"status": previousStatus});
+          setCurrentCaseDetails(
+              caseDetails.value!.copyWith(status: previousStatus));
+          SnackBarUtils.showSnackBar(
+              context, "Case status updated successfully");
+        }
+      }
+      getAllCases();
+      getCaseSummary();
+    } catch (e) {
+      print(e);
+    } finally {
+      setIsCaseStatusUpdating(false);
+      setIsCaseStatusUndoing(false);
+    }
+  }
+
+  Future<void> updateCaseDetails(BuildContext context) async {
+    if (isCaseDetailsUpdating.value) {
+      return;
+    }
+    try {
+      setIsCaseDetailsUpdating(true);
+      Map<String, dynamic> caseDetail = {
+        'description': descriptionController.text,
+        'title': titleController.text,
+        'caseId': caseIdController.text,
+        'category': caseCategory.value
+      };
+
+      if (caseDetails.value!.description != descriptionController.text ||
+          caseDetails.value!.category != caseCategory.value) {
+        double priority = await _casesRepository.getCasePriority({
+          "text": descriptionController.text.trim(),
+          "case_type": Constants.caseCategoriesMap[caseCategory.value]!
+        });
+        caseDetail['priority'] = priority;
+      }
+
+      await _casesRepository.updateCase(caseDetails.value!.id, caseDetail);
+      setCurrentCaseDetails(caseDetails.value!.copyWith(
+          description: descriptionController.text,
+          caseId: caseIdController.text,
+          category: caseCategory.value,
+          title: titleController.text));
+      SnackBarUtils.showSnackBar(context, "Case updated successfully");
+
+      Get.back();
+      getAllCases();
+
+      getTop3Cases();
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      setIsCaseDetailsUpdating(false);
+    }
   }
 
   // FILTER & SEARCH CASES --------------------------------------------------------
@@ -233,30 +381,10 @@ class CasesController extends GetxController {
   RxList<CaseModel> topCases = <CaseModel>[].obs;
   RxMap<String, int> summary = <String, int>{}.obs;
   Rx<CaseModel?> caseDetails = null.obs;
-  Rx<bool> isDescriptionOpen = false.obs;
   Rx<bool> isCasesLoading = false.obs;
-  Rx<bool> isCaseAdding = false.obs;
-  Rx<bool> isCaseUpdating = false.obs;
-  Rx<bool> isCaseUndoing = false.obs;
 
   setIsCasesLoading(bool value) {
     isCasesLoading.value = value;
-  }
-
-  setIsCaseAdding(bool value) {
-    isCaseAdding.value = value;
-  }
-
-  setIsCaseUpdating(bool value) {
-    isCaseUpdating.value = value;
-  }
-
-  setIsCaseUndoing(bool value) {
-    isCaseUndoing.value = value;
-  }
-
-  setIsDescriptionOpen(bool value) {
-    isDescriptionOpen.value = value;
   }
 
   setCurrentCaseDetails(CaseModel value) {
@@ -293,76 +421,9 @@ class CasesController extends GetxController {
     try {
       summary.value = await _casesRepository.getCaseSummary();
       summary.refresh();
+      print(summary);
     } catch (e) {
       print(e);
-    }
-  }
-
-  Future<void> addCase(BuildContext context) async {
-    setIsCaseAdding(true);
-    try {
-      double priority = await _casesRepository.getCasePriority({
-        "text": descriptionController.text,
-        "case_type": Constants.caseCategoriesMap[caseCategory.value]!
-      });
-
-      CaseModel newCase = CaseModel(
-          caseId: caseIdController.text.trim(),
-          title: titleController.text.trim(),
-          category: caseCategory.value,
-          uploadDateTime: DateTime.now(),
-          description: descriptionController.text,
-          status: "Pending",
-          priority: priority,
-          judgeId: "");
-      await _casesRepository.addCase(newCase);
-      SnackBarUtils.showSnackBar(context, "Case added successfully");
-      Get.back();
-      clearControllers();
-      getAllCases();
-      getTop3Cases();
-      getCaseSummary();
-    } catch (e) {
-      print(e);
-    } finally {
-      setIsCaseAdding(false);
-    }
-  }
-
-  Future<void> updateCaseStatus(BuildContext context, bool isUpdating) async {
-    try {
-      if (isUpdating) {
-        setIsCaseUpdating(true);
-        if (Constants.caseStatus.indexOf(caseDetails.value!.status) < 3) {
-          String nextStatus = Constants.caseStatus[
-              Constants.caseStatus.indexOf(caseDetails.value!.status) + 1];
-          await _casesRepository.updateCaseStatus(
-              caseDetails.value!.id, nextStatus);
-          setCurrentCaseDetails(
-              caseDetails.value!.copyWith(status: nextStatus));
-          SnackBarUtils.showSnackBar(
-              context, "Case status updated successfully");
-        }
-      } else {
-        setIsCaseUndoing(true);
-        if (Constants.caseStatus.indexOf(caseDetails.value!.status) > 0) {
-          String previousStatus = Constants.caseStatus[
-              Constants.caseStatus.indexOf(caseDetails.value!.status) - 1];
-          await _casesRepository.updateCaseStatus(
-              caseDetails.value!.id, previousStatus);
-          setCurrentCaseDetails(
-              caseDetails.value!.copyWith(status: previousStatus));
-          SnackBarUtils.showSnackBar(
-              context, "Case status updated successfully");
-        }
-      }
-      getAllCases();
-      getCaseSummary();
-    } catch (e) {
-      print(e);
-    } finally {
-      setIsCaseUpdating(false);
-      setIsCaseUndoing(false);
     }
   }
 }

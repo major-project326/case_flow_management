@@ -102,7 +102,7 @@ class _DetailsConfirmationState extends State<DetailsConfirmation> {
                     height: 5,
                   ),
                   Text(
-                    casesController.descriptionController.text,
+                    casesController.descriptionController.text.trim(),
                     textAlign: TextAlign.justify,
                     style: TextStyle(height: 1.5),
                   ),

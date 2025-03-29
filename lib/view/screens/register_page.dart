@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:major_project/view/components/custom_input_field.dart';
 import 'package:major_project/view/screens/bottom_nav.dart';
-import 'package:major_project/view/screens/login_page1.dart';
+import 'package:major_project/view/screens/login_page.dart';
 
 class RegisterPage extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();

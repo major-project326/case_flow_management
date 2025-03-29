@@ -28,13 +28,19 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEFEFEF),
+      backgroundColor: const Color(0xFFF2F4F3),
       body: Center(
-        child: Text(
-          'Case Flow App',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-        ),
-      ),
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.asset('assets/images/logo.png'),
+          Text(
+            'Court Case Scheduler',
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          ),
+        ],
+      )),
     );
   }
 }

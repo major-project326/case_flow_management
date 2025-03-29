@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:major_project/controllers/cases_controller.dart';
@@ -105,6 +103,9 @@ class _AddCasePageState extends State<AddCasePage> {
                         child: Expanded(
                           child: GestureDetector(
                             onTap: () {
+                              if (casesController.isCaseAdding.value) {
+                                return;
+                              }
                               if (_currentPage > 0) {
                                 setState(() {
                                   _currentPage = _currentPage - 1;
@@ -143,12 +144,14 @@ class _AddCasePageState extends State<AddCasePage> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () async {
+                            if (casesController.isCaseAdding.value) {
+                              return;
+                            }
                             if (!casesController.isFormValid(
                                 context, _currentPage)) {
                               return;
                             }
                             if (_currentPage == 2) {
-                              log('message');
                               await casesController.addCase(context);
                             }
                             if (_currentPage < 2) {

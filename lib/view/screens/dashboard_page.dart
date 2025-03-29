@@ -77,7 +77,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    casesController.summary['Total']!.toString(),
+                    casesController.summary['Total'].toString(),
                     style: TextStyle(
                         color: Color.fromARGB(255, 0, 0, 0),
                         fontSize: 22,
@@ -128,8 +128,10 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(height: 10),
             if (casesController.topCases.isNotEmpty)
               ...List.generate(casesController.topCases.length, (index) {
-                return TopCaseCard(
-                    caseDetails: casesController.topCases[index]);
+                return Obx(() {
+                  return TopCaseCard(
+                      caseDetails: casesController.topCases[index]);
+                });
               }),
           ],
         ),
@@ -167,7 +169,7 @@ class CaseStatusCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              casesController.summary[title]!.toString(),
+              casesController.summary[title].toString(),
               style: const TextStyle(
                   color: Color.fromARGB(255, 0, 0, 0),
                   fontSize: 22,
