@@ -103,4 +103,12 @@ class CasesRepository {
       rethrow;
     }
   }
+
+  Future<void> deleteCase(String caseId) async {
+    try {
+      _fireStoreServices.deleteCase(caseId);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

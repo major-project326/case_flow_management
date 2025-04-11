@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:major_project/controllers/cases_controller.dart';
 import 'package:major_project/res/constants/constants.dart';
+import 'package:major_project/view/components/custom_input_field.dart';
 import 'package:major_project/view/screens/update_case_page.dart';
 
 class CaseDetailsPage extends StatefulWidget {
@@ -142,189 +143,277 @@ class _CaseDetailsPageState extends State<CaseDetailsPage> {
                     ),
                   ),
                   Builder(builder: (context) {
-                    return Obx(() {
-                      return ConstrainedBox(
-                        constraints:
-                            const BoxConstraints.tightFor(height: 180.0),
-                        child: Theme(
-                          data: ThemeData(canvasColor: Colors.transparent),
-                          child: Stepper(
-                              connectorColor: const WidgetStatePropertyAll(
-                                  Color(0xFFD1D1D1)),
-                              margin: const EdgeInsets.all(0),
-                              elevation: 0,
-                              type: StepperType.horizontal,
-                              stepIconMargin: const EdgeInsets.all(0),
-                              currentStep: Constants.caseStatus.indexOf(
-                                  casesController.caseDetails.value!.status),
-                              controlsBuilder: (context, details) {
-                                return SizedBox(
-                                  width: double.infinity,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: GestureDetector(
-                                          onTap: () async {
-                                            await casesController
-                                                .updateCaseStatus(
-                                                    context, false);
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.black),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                color: Colors.white),
-                                            height: 50,
-                                            child: Center(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 10),
-                                                child: Center(
+                    return ConstrainedBox(
+                      constraints: const BoxConstraints.tightFor(height: 180.0),
+                      child: Theme(
+                        data: ThemeData(canvasColor: Colors.transparent),
+                        child: Stepper(
+                            connectorColor:
+                                const WidgetStatePropertyAll(Color(0xFFD1D1D1)),
+                            margin: const EdgeInsets.all(0),
+                            elevation: 0,
+                            type: StepperType.horizontal,
+                            stepIconMargin: const EdgeInsets.all(0),
+                            currentStep: Constants.caseStatus.indexOf(
+                                casesController.caseDetails.value!.status),
+                            controlsBuilder: (context, details) {
+                              return SizedBox(
+                                width: double.infinity,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          await casesController
+                                              .updateCaseStatus(context, false);
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.black),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              color: Colors.white),
+                                          height: 50,
+                                          child: Center(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10),
+                                              child: Center(
+                                                child: casesController
+                                                        .isCaseStatusUndoing
+                                                        .value
+                                                    ? CircularProgressIndicator(
+                                                        color: Colors.black,
+                                                      )
+                                                    : Text(
+                                                        'Undo Status',
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          await casesController
+                                              .updateCaseStatus(context, true);
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    offset: const Offset(0, 2),
+                                                    blurRadius: 4,
+                                                    color: Colors.black
+                                                        .withOpacity(.25))
+                                              ],
+                                              color: Colors.black),
+                                          height: 50,
+                                          child: Center(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10),
+                                              child: Center(
                                                   child: casesController
-                                                          .isCaseStatusUndoing
+                                                          .isCaseStatusUpdating
                                                           .value
                                                       ? CircularProgressIndicator(
-                                                          color: Colors.black,
+                                                          color: Colors.white,
                                                         )
                                                       : Text(
-                                                          'Undo Status',
+                                                          "Update Status",
                                                           style: TextStyle(
                                                               fontSize: 16,
+                                                              color:
+                                                                  Colors.white,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold),
-                                                        ),
-                                                ),
-                                              ),
+                                                        )),
                                             ),
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Expanded(
-                                        child: GestureDetector(
-                                          onTap: () async {
-                                            await casesController
-                                                .updateCaseStatus(
-                                                    context, true);
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                      offset:
-                                                          const Offset(0, 2),
-                                                      blurRadius: 4,
-                                                      color: Colors.black
-                                                          .withOpacity(.25))
-                                                ],
-                                                color: Colors.black),
-                                            height: 50,
-                                            child: Center(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 10),
-                                                child: Center(
-                                                    child: casesController
-                                                            .isCaseStatusUpdating
-                                                            .value
-                                                        ? CircularProgressIndicator(
-                                                            color: Colors.white,
-                                                          )
-                                                        : Text(
-                                                            "Update Status",
-                                                            style: TextStyle(
-                                                                fontSize: 16,
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          )),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                              steps: [
-                                ...List.generate(Constants.caseStatus.length,
-                                    (index) => _buildStep(index))
-                              ]),
-                        ),
-                      );
-                    });
-                  }),
-                  Obx(() {
-                    return Container(
-                      width: double.infinity,
-                      height:
-                          casesController.isDescriptionOpen.value ? null : 310,
-                      padding: const EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(),
-                          borderRadius: BorderRadius.circular(15)),
-                      child: Column(
-                        children: [
-                          const Text(
-                            "Description",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Text(
-                            casesController.caseDetails.value!.description,
-                            textAlign: TextAlign.justify,
-                            style: const TextStyle(height: 1.5),
-                            maxLines: casesController.isDescriptionOpen.value
-                                ? null
-                                : 8,
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Visibility(
-                            visible: !casesController.isDescriptionOpen.value,
-                            child: Align(
-                              alignment: Alignment.bottomCenter,
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    casesController.setIsDescriptionOpen(true);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.black,
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12, horizontal: 20),
-                                  ),
-                                  child: const Text('Read More')),
-                            ),
-                          )
-                        ],
+                                  ],
+                                ),
+                              );
+                            },
+                            steps: [
+                              ...List.generate(Constants.caseStatus.length,
+                                  (index) => _buildStep(index))
+                            ]),
                       ),
                     );
-                  })
+                  }),
+                  CustomInputField(
+                    readOnly: !casesController.isPriorityEditable.value,
+                    hintText: "Enter Priority",
+                    labelText: "Priority",
+                    controller: casesController.priorityController,
+                    suffixIconButton: casesController.isPriorityEditable.value
+                        ? null
+                        : IconButton(
+                            onPressed: () =>
+                                casesController.setIsPriorityEditable(true),
+                            icon: Icon(Icons.edit)),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Visibility(
+                    visible: casesController.isPriorityEditable.value,
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        height: 40,
+                        child: GestureDetector(
+                          onTap: () async {
+                            await casesController.updateCasePriority(context);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                      offset: const Offset(0, 2),
+                                      blurRadius: 4,
+                                      color: Colors.black.withOpacity(.25))
+                                ],
+                                color: Colors.black),
+                            height: 40,
+                            child: Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Center(
+                                    child: Text(
+                                  'Done',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                )),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    width: double.infinity,
+                    height:
+                        casesController.isDescriptionOpen.value ? null : 310,
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(),
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Column(
+                      children: [
+                        const Text(
+                          "Description",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Text(
+                          casesController.caseDetails.value!.description,
+                          textAlign: TextAlign.justify,
+                          style: const TextStyle(height: 1.5),
+                          maxLines: casesController.isDescriptionOpen.value
+                              ? null
+                              : 8,
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Visibility(
+                          visible: !casesController.isDescriptionOpen.value,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  casesController.setIsDescriptionOpen(true);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 12, horizontal: 20),
+                                ),
+                                child: const Text('Read More')),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        await casesController.deleteCase(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                      ),
+                      icon: casesController.isCaseDeleting.value
+                          ? null
+                          : const Icon(
+                              Icons.delete,
+                              size: 25,
+                              color: Colors.white,
+                            ),
+                      label: casesController.isCaseDeleting.value
+                          ? CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : const Text(
+                              'Delete Case',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
                 ]),
           ),
         );

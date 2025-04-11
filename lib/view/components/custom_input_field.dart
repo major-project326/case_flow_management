@@ -7,6 +7,8 @@ class CustomInputField extends StatefulWidget {
   String? labelText;
   IconData? prefixIcon;
   int? maxLines;
+  IconButton? suffixIconButton;
+  bool? readOnly;
   Function(String)? onChange;
   CustomInputField(
       {super.key,
@@ -15,6 +17,8 @@ class CustomInputField extends StatefulWidget {
       this.labelText,
       this.maxLines,
       this.prefixIcon,
+      this.suffixIconButton,
+      this.readOnly,
       this.onChange});
 
   @override
@@ -39,6 +43,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
             height: 5,
           ),
         TextField(
+          readOnly: widget.readOnly ?? false,
           focusNode: focusNode,
           onTapOutside: (event) {
             focusNode.unfocus();
@@ -49,6 +54,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
             prefixIcon: widget.prefixIcon != null
                 ? Icon(widget.prefixIcon, color: Colors.black)
                 : null,
+            suffixIcon: widget.suffixIconButton,
             hintText: widget.hintText,
             filled: true,
             fillColor: Colors.white,

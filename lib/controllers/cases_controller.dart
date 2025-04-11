@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:major_project/models/case_model.dart';
 import 'package:major_project/repository/cases_repository.dart';
 import 'package:major_project/res/constants/constants.dart';
+import 'package:major_project/utils/dialogbox_utils.dart';
 import 'package:major_project/utils/snackbar_utils.dart';
 import 'package:major_project/utils/utils.dart';
 
@@ -100,6 +101,18 @@ class CasesController extends GetxController {
   }
 
   Future<void> addCase(BuildContext context) async {
+    String predictedCaseCategory =
+        Utils.identifyCaseType(descriptionController.text);
+
+    if (predictedCaseCategory !=
+        Constants.caseCategoriesMap[caseCategory.value]!) {
+      bool? proceed = await DialogboxUtils.showConfirmationDialog(context,
+          'The case category and the case description does not match. Do you want to proceed?');
+
+      if (proceed != true) {
+        return;
+      }
+    }
     setIsCaseAdding(true);
     try {
       double priority = await _casesRepository.getCasePriority({
@@ -117,12 +130,12 @@ class CasesController extends GetxController {
           priority: priority,
           judgeId: "");
       await _casesRepository.addCase(newCase);
+
+      await getAllCases();
+      await getTop3Cases();
+      await getCaseSummary();
       SnackBarUtils.showSnackBar(context, "Case added successfully");
       Get.back();
-
-      getAllCases();
-      getTop3Cases();
-      getCaseSummary();
     } catch (e) {
       print(e);
     } finally {
@@ -132,9 +145,15 @@ class CasesController extends GetxController {
 
   // UPDATE CASE -------------------------------------------------------------
 
+  TextEditingController priorityController = TextEditingController();
   Rx<bool> isCaseDetailsUpdating = false.obs;
   Rx<bool> isCaseStatusUpdating = false.obs;
   Rx<bool> isCaseStatusUndoing = false.obs;
+  Rx<bool> isPriorityEditable = false.obs;
+
+  setIsPriorityEditable(bool value) {
+    isPriorityEditable.value = value;
+  }
 
   setIsCaseDetailsUpdating(bool value) {
     isCaseDetailsUpdating.value = value;
@@ -192,6 +211,28 @@ class CasesController extends GetxController {
     } finally {
       setIsCaseStatusUpdating(false);
       setIsCaseStatusUndoing(false);
+    }
+  }
+
+  Future<void> updateCasePriority(BuildContext context) async {
+    try {
+      if (priorityController.text.isNotEmpty &&
+          caseDetails.value!.priority !=
+              double.parse(priorityController.text)) {
+        await _casesRepository.updateCase(caseDetails.value!.id,
+            {"priority": double.parse(priorityController.text)});
+        setCurrentCaseDetails(caseDetails.value!
+            .copyWith(priority: double.parse(priorityController.text)));
+        SnackBarUtils.showSnackBar(
+            context, "Case priority updated successfully");
+        getAllCases();
+        getCaseSummary();
+      }
+    } catch (e) {
+      print(e);
+      SnackBarUtils.showSnackBar(context, "Fail to update priority");
+    } finally {
+      setIsPriorityEditable(false);
     }
   }
 
@@ -393,6 +434,7 @@ class CasesController extends GetxController {
     } else {
       caseDetails.value = value;
     }
+    priorityController.text = caseDetails.value!.priority.toStringAsFixed(2);
   }
 
   Future<void> getAllCases() async {
@@ -424,6 +466,39 @@ class CasesController extends GetxController {
       print(summary);
     } catch (e) {
       print(e);
+    }
+  }
+
+  // CASES DELETE -------------------------------------------------------
+
+  Rx<bool> isCaseDeleting = false.obs;
+
+  setIsCaseDeleting(bool value) {
+    isCaseDeleting.value = value;
+  }
+
+  Future<void> deleteCase(BuildContext context) async {
+    if (isCaseDeleting.value) {
+      return;
+    }
+    bool? proceed = await DialogboxUtils.showConfirmationDialog(
+        context, 'Do you want to proceed to delete the case?');
+    if (proceed != true) {
+      return;
+    }
+    setIsCaseDeleting(true);
+    try {
+      await _casesRepository.deleteCase(caseDetails.value!.id);
+
+      await getAllCases();
+      await getTop3Cases();
+      await getCaseSummary();
+      SnackBarUtils.showSnackBar(context, "Case deleted successfully");
+      Get.back();
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      setIsCaseDeleting(false);
     }
   }
 }
