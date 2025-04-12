@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:major_project/res/constants/endpoint.dart';
 
 class HttpService {
   Future<dynamic> postRequest(Map<String, dynamic> data) async {
-    const String baseUrl =
-        'https://case-flow-management-server-8i5l.onrender.com/predict';
+    String baseUrl = Endpoints.predictionUrl;
     final url = Uri.parse(baseUrl);
     final response = await http.post(
       url,
